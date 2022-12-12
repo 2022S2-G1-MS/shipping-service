@@ -17,7 +17,7 @@ jobs:
       
       # Build image.
       - name: Build image
-        run: docker build --build-arg JAR_FILE=app.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest
+        run: docker build --build-arg JAR_FILE=app.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
       # Test reports.
       - name: Install NodeJs
