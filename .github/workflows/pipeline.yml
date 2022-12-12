@@ -16,6 +16,12 @@ jobs:
         run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
       
       # Build image.
+      - name: Install Maven
+        run: apt install maven
+        
+      - name: Create .jar
+        run: mvn clean install
+      
       - name: Build image
         run: docker build --build-arg JAR_FILE=app.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
