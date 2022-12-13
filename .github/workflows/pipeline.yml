@@ -22,16 +22,10 @@ jobs:
       # Get branch's name.
       - name: Branch name
         run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-        
-      - name: Build project with Maven and analyze with SonarCloud
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn verify sonar:sonar \
-          -Dsonar.login=$SONAR_TOKEN
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.organization=2022s2-g1-ms \
-          -Dsonar.projectKey=2022S2-G1-MS_shipping-service
+      
+      # Build with Maven.
+      - name: Build with Maven
+        run: mvn clean install
       
       # Build Docker image.      
       - name: Build image
@@ -54,11 +48,11 @@ jobs:
      # - name: Run Postman collection
       #  run: newman run obligatorio.postman_collection.json -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
       
-      - name: Reports details
-        uses: actions/upload-artifact@v2
-        with:
-          name: ReportTest
-          path: Reports
+     # - name: Reports details
+     #   uses: actions/upload-artifact@v2
+     #   with:
+     #     name: ReportTest
+     #     path: Reports
           
       # Docker Hub.
       - name: Login Docker Hub
