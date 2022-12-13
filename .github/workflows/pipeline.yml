@@ -32,7 +32,7 @@ jobs:
       
       # Build image.      
       - name: Build image
-        run: docker build --build-arg JAR_FILE=./target/*.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
+        run: docker build --build-arg JAR_FILE=./target/*-0.0.1-SNAPSHOT.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
       # Test reports.
       - name: Install NodeJs
