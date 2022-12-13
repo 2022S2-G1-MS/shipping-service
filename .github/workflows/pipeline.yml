@@ -2,30 +2,52 @@ name: Build and deploy
 
 on:
   push:
-    branches:
-      - 'develop'
+    branches: [ 'main', 'staging', 'develop' ]
       
 jobs:
   build:
-    runs-on: ubintu-latest
-    
+    runs-on: ubuntu-latest
     steps:
-      name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
       
-      name: Login DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PWD }}
+      # Get branch's name.
+      - name: Branch name
+        run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      
+      # Build image.      
+      - name: Build image
+        run: docker build --build-arg JAR_FILE=app.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
+      
+      # Test reports.
+      - name: Install NodeJs
+        uses: actions/setup-node@v1
+        with: 
+          node-version: "12.x"
         
-      name: Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Install Newman
+        run: |
+          npm i -g newman
+          npm i -g newman-reporter-htmlextra
       
-      name: Build and push
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKER_USER }}/shipping-service:latest
+      - name: Create directory test result
+        run: mkdir -p Reports
+        
+      - name: Run Postman collection
+        run: newman run obligatorio.postman_collection.json -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
+      
+      - name: Reports details
+        uses: actions/upload-artifact@v2
+        with:
+          name: ReportTest
+          path: Reports
+          
+      # Docker Hub.
+      - name: Login Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        
+      - name: Push image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service
