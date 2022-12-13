@@ -25,9 +25,9 @@ jobs:
         
       - name: Build project with Maven and analyze with SonarCloud
         run: | 
-          mvn verify sonar:sonar \ -Dsonar.organization=2022s2-g1-ms \ -Dsonar.projectKey=2022S2-G1-MS_shipping-service
+          mvn verify sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN}} -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=2022s2-g1-ms -Dsonar.projectKey=2022S2-G1-MS_shipping-service
       
-      # Build image.      
+      # Build Docker image.      
       - name: Build image
         run: docker build --build-arg JAR_FILE=./target/*-0.0.1-SNAPSHOT.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
