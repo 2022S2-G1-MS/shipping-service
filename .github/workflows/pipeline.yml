@@ -8,16 +8,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+    
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       
       # Get branch's name.
       - name: Branch name
         run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        
+      # Build project with Maven
+      - name: Build project
+        run: mvn clean install
+        
+      # SonarCloud.
+      - name: Analyze with SonarCloud
+        run: ./mvnw -B verify sonar:sonar -Dsonar.projectKey=2022S2-G1-MS_shipping-service -Dsonar.organization=2022s2-g1-ms -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       
       # Build image.      
       - name: Build image
-        run: docker build --build-arg JAR_FILE=app.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
+        run: docker build --build-arg JAR_FILE=./target/*-0.0.1-SNAPSHOT.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
       # Test reports.
       - name: Install NodeJs
@@ -27,14 +46,14 @@ jobs:
         
       - name: Install Newman
         run: |
-          npm i -g newman
-          npm i -g newman-reporter-htmlextra
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
       
       - name: Create directory test result
         run: mkdir -p Reports
         
-      - name: Run Postman collection
-        run: newman run obligatorio.postman_collection.json -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
+     # - name: Run Postman collection
+      #  run: newman run obligatorio.postman_collection.json -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
       
       - name: Reports details
         uses: actions/upload-artifact@v2
