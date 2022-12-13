@@ -21,8 +21,8 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           
-      - name: Install Maven
-        run: apt install maven
+      #- name: Install Maven
+        #run: apt install maven
         
       - name: Build project
         run: mvn clean install
