@@ -25,11 +25,21 @@ jobs:
       
       # Build with Maven.
       - name: Build with Maven
-        run: mvn clean install
+        #run: mvn clean install
+        run: |
+          cd ./shipping-service
+          mvn -B package --file pom.xml
+      
+      # Build project with Maven and analyze with SonarCloud.
+      - name: Build with Maven and analyze with SonarCloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=2022s2-g1-ms -Dsonar.projectKey=2022S2-G1-MS_shipping-service
       
       # Build Docker image.      
       - name: Build image
-        run: docker build --build-arg JAR_FILE=./target/*-0.0.1-SNAPSHOT.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
+        run: docker build --build-arg JAR_FILE=./target/*spring-boot.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
       # Test reports.
       - name: Install NodeJs
