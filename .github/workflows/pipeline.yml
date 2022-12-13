@@ -26,9 +26,6 @@ jobs:
         
       - name: Build project
         run: mvn clean install
-        
-      - name: Check target folder
-        run: echo "cd target && ll"
       
       # Build image.      
       - name: Build image
@@ -42,8 +39,8 @@ jobs:
         
       - name: Install Newman
         run: |
-          npm i -g newman
-          npm i -g newman-reporter-htmlextra
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
       
       - name: Create directory test result
         run: mkdir -p Reports
