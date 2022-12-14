@@ -70,7 +70,7 @@ jobs:
         run: mkdir -p Reports
         
       - name: Run Postman collection
-        run: newman run obligatorio.postman_collection.json -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
+        run: newman run "https://api.postman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?access_key=${{ secrets.POSTMAN_API_KEY }}" -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
       
       - name: Reports details
         uses: actions/upload-artifact@v2
