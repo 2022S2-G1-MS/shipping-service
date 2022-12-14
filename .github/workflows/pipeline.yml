@@ -46,11 +46,16 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       
       # Build project with Maven and analyze with SonarCloud.
-      - name: Build with Maven and analyze with SonarCloud
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=2022s2-g1-ms
+      #- name: Build with Maven and analyze with SonarCloud
+       # env:
+        #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         # SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+       # run: mvn -B verify sonar:sonar -Dsonar.projectKey=2022s2-g1-ms
       
       # Build Docker image.      
       - name: Build image
