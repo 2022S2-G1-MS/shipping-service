@@ -67,16 +67,16 @@ jobs:
           npm install -g newman-reporter-htmlextra
       
       - name: Create directory test result
-        run: mkdir -p Reports
+        run: mkdir -p shipping-reports
         
       - name: Run Postman collection
-        run: newman run "https://api.postman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?access_key=${{ secrets.POSTMAN_API_KEY }}" -r htmlextra --reporter-htmlextra-export Reports/report.html --reporter-htmlextra-darkTheme  > Reports/report2.html
+        run: newman run "https://api.postman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?access_key=${{ secrets.POSTMAN_API_KEY }}" -r htmlextra --reporter-htmlextra-export shipping-reports/report.html --reporter-htmlextra-darkTheme  > shipping-reports/report2.html
       
       - name: Reports details
         uses: actions/upload-artifact@v2
         with:
-          name: ReportTest
-          path: Reports
+          name: shipping-reports
+          path: shipping-reports
           
       # Docker Hub.
       - name: Login Docker Hub
