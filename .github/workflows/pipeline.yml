@@ -42,9 +42,9 @@ jobs:
       # Build project with Maven and analyze with SonarCloud.
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=2022s2-g1-ms -Dsonar.projectKey=2022S2-G1-MS_shipping-service
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=2022S2-G1-MS_shipping-service
       
       # Build project with Maven.
       - name: Build project with Maven
