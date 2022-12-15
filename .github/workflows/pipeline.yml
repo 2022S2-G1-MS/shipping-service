@@ -96,7 +96,7 @@ jobs:
     
     steps:
               
-      # Deploy AWS ECS.
+      # Deploy AWS ECS. 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with: 
