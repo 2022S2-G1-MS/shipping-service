@@ -5,7 +5,7 @@ on:
     branches: [ 'main', 'staging', 'develop' ]
       
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
      
@@ -46,39 +46,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=2022S2-G1-MS_shipping-service
-      
+
+  build:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v2
+    
       # Build project with Maven.
       - name: Build project with Maven
         run: mvn clean package --file pom.xml
       
+  deploy:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      # Get branch's name.
+      - name: Branch name
+        run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+    
       # Build Docker image.      
       - name: Build image
         run: docker build --build-arg JAR_FILE=./target/*spring-boot.jar -t ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service:latest .
       
-      # Test reports.
-      - name: Install NodeJs
-        uses: actions/setup-node@v1
-        with: 
-          node-version: "12.x"
-        
-      - name: Install Newman
-        run: |
-          npm install -g newman
-          npm install -g newman-reporter-htmlextra
-      
-      - name: Create directory test result
-        run: mkdir -p shipping-reports
-        
-     # - name: Run Postman collection
-       # run: newman run "https://api.postman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?access_key=${{ secrets.POSTMAN_API_KEY }}" -r htmlextra --reporter-htmlextra-export shipping-reports/report.html --reporter-htmlextra-darkTheme  > shipping-reports/report2.html
-        #run: newman run "https://api.postman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}"      
-      
-      - name: Reports details
-        uses: actions/upload-artifact@v2
-        with:
-          name: shipping-reports
-          path: shipping-reports
-          
       # Docker Hub.
       - name: Login Docker Hub
         uses: docker/login-action@v1
