@@ -80,7 +80,10 @@ jobs:
           path: shipping-reports
           
   deploy:
+    name: Deploy AWS
+    needs: [build]
     runs-on: ubuntu-latest
+    
     steps:
       
       # Docker Hub.
