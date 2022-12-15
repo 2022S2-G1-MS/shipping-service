@@ -79,17 +79,6 @@ jobs:
           name: shipping-reports
           path: shipping-reports
           
-  deploy:
-    name: Deploy AWS
-    needs: [build]
-    runs-on: ubuntu-latest
-    
-    steps:
-      
-      # Get branch's name.
-      - name: Branch name
-        run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-      
       # Docker Hub.
       - name: Login Docker Hub
         uses: docker/login-action@v1
@@ -99,7 +88,14 @@ jobs:
         
       - name: Push image to Docker Hub
         run: docker push ${{ secrets.DOCKER_USER }}/${{ env.BRANCH }}-shipping-service
-        
+          
+  deploy:
+    name: Deploy AWS
+    needs: [build]
+    runs-on: ubuntu-latest
+    
+    steps:
+              
       # Deploy AWS ECS.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
